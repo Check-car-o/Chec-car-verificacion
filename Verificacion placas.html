@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Verificación Hoy No Circula</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #eef2f3, #8e9eab);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background: white;
+      padding: 40px 30px;
+      border-radius: 16px;
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+      transition: all 0.3s ease-in-out;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      font-size: 26px;
+      color: #333;
+    }
+
+    input {
+      padding: 12px;
+      width: 100%;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+      margin-bottom: 20px;
+      outline: none;
+    }
+
+    button {
+      padding: 12px 24px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      background-color: #0077cc;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #005fa3;
+    }
+
+    #resultado {
+      font-size: 20px;
+      margin-top: 20px;
+      font-weight: bold;
+      opacity: 0;
+      transform: scale(0.95);
+      transition: all 0.4s ease;
+      padding: 10px;
+      border-radius: 10px;
+    }
+
+    #resultado.verde {
+      color: #155724;
+      background-color: #d4edda;
+      border: 1px solid #c3e6cb;
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    #resultado.rojo {
+      color: #721c24;
+      background-color: #f8d7da;
+      border: 1px solid #f5c6cb;
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .emoji {
+      font-size: 28px;
+      display: block;
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>¿Puede circular hoy?</h1>
+    <input type="text" id="placa" placeholder="Ingresa tu placa completa" maxlength="10">
+    <button onclick="verificarPlaca()">Verificar</button>
+    <div id="resultado"></div>
+  </div>
+
+  <script>
+    function verificarPlaca() {
+      const placa = document.getElementById("placa").value.trim().toUpperCase();
+      const resultado = document.getElementById("resultado");
+
+      resultado.className = ""; // Limpiar estilo anterior
+      resultado.textContent = "";
+
+      if (placa.length === 0) {
+        resultado.textContent = "⚠️ Por favor ingresa una placa.";
+        resultado.classList.add("rojo");
+        return;
+      }
+
+      const ultimoChar = placa.slice(-1);
+
+      if (!/[0-9]/.test(ultimoChar)) {
+        resultado.textContent = "⚠️ La placa debe terminar en un número.";
+        resultado.classList.add("rojo");
+        return;
+      }
+
+      const diaSemana = new Date().getDay(); // 0=Domingo, 1=Lunes...
+
+      const restricciones = {
+        1: ["5", "6"], // Lunes
+        2: ["7", "8"], // Martes
+        3: ["3", "4"], // Miércoles
+        4: ["1", "2"], // Jueves
+        5: ["9", "0"], // Viernes
+        // 0 = Domingo, 6 = Sábado (libre)
+      };
+
+      const noCirculaHoy = restricciones[diaSemana] || [];
+
+      if (noCirculaHoy.includes(ultimoChar)) {
+        resultado.innerHTML = `<span class="emoji">🚫</span>Hoy NO puedes circular.`;
+        resultado.classList.add("rojo");
+      } else {
+        resultado.innerHTML = `<span class="emoji">✅</span>Hoy puedes circular.`;
+        resultado.classList.add("verde");
+      }
+    }
+  </script>
+
+</body>
+</html>
